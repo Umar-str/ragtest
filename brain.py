@@ -69,17 +69,37 @@ class PerkAgent:
         
         return answer, thoughts
 
+# brain.py
+
 def generate_pdf_report(query, answer, thoughts):
+    """Creates a professional PDF byte-stream, safely handling Unicode characters."""
     pdf = FPDF()
     pdf.add_page()
+    
+    # Helper to clean text for the PDF
+    def safe_text(text):
+        # Converts text to Latin-1, replacing unsupportable characters with '?'
+        return text.encode('latin-1', 'replace').decode('latin-1')
+
+    # Header
     pdf.set_font("helvetica", "B", 16)
-    pdf.cell(0, 10, "Perk AI Official Report", ln=True, align="C")
+    pdf.cell(0, 10, safe_text("Perk AI: Official HRMS Report"), ln=True, align="C")
     pdf.ln(10)
     
+    # Query Section
     pdf.set_font("helvetica", "B", 12)
-    pdf.cell(0, 10, f"Query: {query}", ln=True)
+    pdf.cell(0, 10, safe_text(f"Subject: {query}"), ln=True)
+    pdf.line(10, pdf.get_y(), 200, pdf.get_y())
     pdf.ln(5)
     
+    # Answer Section
     pdf.set_font("helvetica", "", 11)
-    pdf.multi_cell(0, 7, f"Expert Response:\n{answer}")
+    pdf.multi_cell(0, 8, safe_text(f"Expert Response:\n{answer}"))
+    pdf.ln(10)
+    
+    # Trace Section
+    pdf.set_font("helvetica", "I", 8)
+    pdf.set_text_color(128, 128, 128)
+    pdf.multi_cell(0, 6, safe_text(f"Internal Reasoning Trace:\n{thoughts[:500]}..."))
+    
     return pdf.output()
