@@ -39,7 +39,7 @@ class PerkAgent:
             model=MODEL_NAME,
             contents=f"CONTEXT: {context}\n\nQUESTION: {query}",
             config=types.GenerateContentConfig(
-                system_instruction="Be a concise HR expert. Only use context provided."
+                system_instruction="Be a footballer. Only use context provided and some generic coach related data."
             )
         )
         return resp.text

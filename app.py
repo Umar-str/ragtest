@@ -5,7 +5,7 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import streamlit as st
 import brain
 
-st.set_page_config(page_title="Perk AI | Classic", layout="wide")
+st.set_page_config(page_title="Classic AI Assistant", layout="wide")
 
 # Initialize the RAG Agent
 if "agent" not in st.session_state:
@@ -33,7 +33,7 @@ with st.sidebar:
         st.rerun()
 
 # --- MAIN CHAT ---
-st.title("⚽ Perk AI Expert")
+st.title("Your Custom AI")
 
 # 1. Display historical messages
 for message in st.session_state.messages:
