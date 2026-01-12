@@ -1,15 +1,17 @@
 [theme]
 # The primary color (replaces the red bar/highlights)
 primaryColor = "#00d4ff" 
-
 # Main background (Deep Navy/Charcoal)
 backgroundColor = "#0d1117" 
-
 # Sidebar & Widget background (slightly lighter for depth)
 secondaryBackgroundColor = "#161b22" 
-
 # Main text color (Off-white to reduce eye strain)
 textColor = "#e6edf3" 
-
 # Choose between "sans serif", "serif", or "monospace"
 font = "sans serif"
+
+[theme.sidebar]
+# You can give the sidebar a different accent color than the main page
+primaryColor = "#ffaa00" 
+backgroundColor = "#0b0e14"
+textColor = "#8b949e"
