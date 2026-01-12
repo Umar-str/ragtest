@@ -3,63 +3,57 @@ import streamlit as st
 import brain
 import os
 
-st.set_page_config(page_title="Perk AI Agent", layout="centered")
+st.set_page_config(page_title="Perk Expert Agent", layout="centered")
 
-# --- UI STYLE ---
+# --- UI SKIN ---
 st.markdown("""
 <style>
-    .stApp { background-color: #0e1117; color: white; }
-    .card {
-        background: #161b22;
-        padding: 25px;
-        border-radius: 15px;
+    .stApp { background-color: #0d1117; color: #c9d1d9; }
+    .card { 
+        background: #161b22; 
+        padding: 25px; 
+        border-radius: 12px; 
         border: 1px solid #30363d;
-        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     }
-    .thought { color: #8b949e; font-style: italic; font-size: 0.9em; margin-top: 15px; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- AGENT INITIALIZATION ---
+# API Key handling
+api_key = st.secrets.get("GEMINI_API_KEY")
+
+if not api_key:
+    st.warning("Please configure GEMINI_API_KEY in Streamlit Secrets.")
+    st.stop()
+
 if "agent" not in st.session_state:
-    # Use your actual key or streamlit secrets
-    api_key = st.secrets.get("GEMINI_API_KEY", "YOUR_KEY_HERE")
     st.session_state.agent = brain.PerkAgent(api_key)
 
 agent = st.session_state.agent
 
-# --- SIDEBAR (Uploads) ---
+# --- SIDEBAR ---
 with st.sidebar:
-    st.header("🏢 Knowledge Base")
-    file = st.file_uploader("Upload Policy (.txt)", type="txt")
-    if file and st.button("Index Data"):
+    st.success("Gemini 3 API Connected")
+    st.title("Settings")
+    file = st.file_uploader("Upload Knowledge Base (.txt)", type="txt")
+    if file and st.button("Index Now"):
         text = file.getvalue().decode("utf-8")
-        count = agent.add_documents(text)
-        st.success(f"Indexed {count} sections.")
+        with st.spinner("Embedding..."):
+            count = agent.add_documents(text)
+            st.info(f"Successfully indexed {count} chunks.")
 
-# --- MAIN UI ---
-st.title("⚽ Perk Expert")
-query = st.text_input("Ask a policy question:", placeholder="e.g. What is the WFH policy?")
+# --- MAIN ---
+st.title("🤖 Perk Expert Agent")
+query = st.text_input("How can I help you today?")
 
-if st.button("Consult Agent", type="primary"):
+if st.button("Consult AI", type="primary"):
     if query:
-        with st.spinner("Analyzing knowledge base..."):
+        with st.spinner("Consulting knowledge base..."):
             ans, thoughts = agent.ask(query)
             
-            # Displaying in our custom HTML skin
-            st.markdown(f"""
-            <div class="card">
-                <div style="color:#58a6ff; font-weight:bold; margin-bottom:10px;">EXPERT GUIDANCE</div>
-                <div>{ans}</div>
-                <div class="thought"><b>Agent Trace:</b> {thoughts[:300]}...</div>
-            </div>
-            """, unsafe_allow_html=True)
+            # Use our custom HTML card
+            st.markdown(f'<div class="card"><b>Expert Response:</b><br><br>{ans}</div>', unsafe_allow_html=True)
             
             # PDF Download
-            pdf_bytes = brain.generate_pdf_report(query, ans, thoughts)
-            st.download_button(
-                label="📥 Download Report",
-                data=pdf_bytes,
-                file_name="perk_report.pdf",
-                mime="application/pdf"
-            )
+            pdf = brain.generate_pdf_report(query, ans, thoughts)
+            st.download_button("📥 Download Official Report", pdf, "Perk_Report.pdf", "application/pdf")
