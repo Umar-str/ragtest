@@ -11,13 +11,7 @@ class PerkAgent:
         self.chroma_client = chromadb.EphemeralClient()
         self.collection = self.chroma_client.get_or_create_collection(name="perk_temp_db")
 
-    def clear_db(self):
-        """Wipes the database for clean testing."""
-        self.chroma_client.delete_collection("perk_temp_db")
-        self.collection = self.chroma_client.get_or_create_collection("perk_temp_db")
-
     def add_documents(self, text):
-        """Splits and indexes text into the vector store."""
         chunks = [c.strip() for c in text.split('\n\n') if len(c.strip()) > 10]
         for i, chunk in enumerate(chunks):
             res = self.client.models.embed_content(
@@ -33,24 +27,19 @@ class PerkAgent:
         return len(chunks)
 
     def ask(self, query):
-        """RAG logic: Retrieval -> Generation."""
-        # 1. Embed query
         q_res = self.client.models.embed_content(
             model=EMBED_MODEL,
             contents=query,
             config=types.EmbedContentConfig(task_type="RETRIEVAL_QUERY")
         )
-        
-        # 2. Search DB
         results = self.collection.query(query_embeddings=[q_res.embeddings[0].values], n_results=3)
-        context = " ".join(results['documents'][0]) if results['documents'] else "No relevant context found."
+        context = " ".join(results['documents'][0]) if results['documents'] else ""
         
-        # 3. Answer
         resp = self.client.models.generate_content(
             model=MODEL_NAME,
             contents=f"CONTEXT: {context}\n\nQUESTION: {query}",
             config=types.GenerateContentConfig(
-                system_instruction="You are a Perk HRMS assistant. Answer ONLY using the context. Be direct."
+                system_instruction="Be a concise HR expert. Only use context provided."
             )
         )
         return resp.text
