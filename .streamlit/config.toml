@@ -1,6 +1,15 @@
 [theme]
-primaryColor = "#58a6ff" # Change this Hex code to your color
-backgroundColor = "#0d1117"
-secondaryBackgroundColor = "#161b22"
-textColor = "#e6edf3"
+# The primary color (replaces the red bar/highlights)
+primaryColor = "#00d4ff" 
+
+# Main background (Deep Navy/Charcoal)
+backgroundColor = "#0d1117" 
+
+# Sidebar & Widget background (slightly lighter for depth)
+secondaryBackgroundColor = "#161b22" 
+
+# Main text color (Off-white to reduce eye strain)
+textColor = "#e6edf3" 
+
+# Choose between "sans serif", "serif", or "monospace"
 font = "sans serif"
